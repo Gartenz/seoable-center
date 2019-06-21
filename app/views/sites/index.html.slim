@@ -1,0 +1,13 @@
+.row.mt-3
+  .col-lg-12
+    = render 'form'
+.row
+  table.table.table-striped
+    th Url
+    th HTTPS
+    - @sites.each do |site|
+        tr
+          td
+            = link_to site.url, site_path(site), class: 'btn btn-link'
+          td
+            = site.https?
