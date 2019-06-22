@@ -2,12 +2,7 @@
   .card-body
     h5.card-title
       = @site.url
-    .
-      table.table
-        th https
-        th www
-        tr
-          td
-            = @site.https?
-          td
-            = @site.www?
+    p
+      ul
+        li HTTPS: #{@site.https?}
+        li WWW: #{@site.www?}
