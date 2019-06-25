@@ -6,3 +6,8 @@
       ul
         li HTTPS: #{@site.https?}
         li WWW: #{@site.www?}
+    p
+      | robots.txt
+      - if @robots
+        .border.border-primary
+          = @robots

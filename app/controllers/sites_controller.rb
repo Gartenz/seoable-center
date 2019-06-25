@@ -16,6 +16,7 @@ class SitesController < ApplicationController
 
   def show
     @site = Site.find(params['id'])
+    @robots = Services::GetRobots.new(@site.url).call
   end
 
   private
