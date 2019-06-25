@@ -1,0 +1,8 @@
+.card.mt-3
+  .card-body
+    h5.card-title
+      = @site.url
+    p
+      ul
+        li HTTPS: #{@site.https?}
+        li WWW: #{@site.www?}

@@ -1,0 +1,8 @@
+= render 'shared/errors', resource: @site
+= form_with model: @site, local: true do |f|
+  .form-group.row
+    .col-lg-10.col-md-10
+      = f.label :url, class: 'sr-only'
+      = f.text_field :url, class: 'form-control'
+    .col-lg-2.col-md-2
+      = f.submit 'Add site', class: 'btn btn-primary'
