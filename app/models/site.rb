@@ -2,6 +2,7 @@ class Site < ApplicationRecord
   after_create :get_robots
 
   has_one :robot
+  has_many :sitemaps, dependent: :destroy
 
   validates :url, presence: true
 
