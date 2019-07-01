@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Site, type: :model do
    it { should validate_presence_of :url }
-
+   it { should have_one :robot }
   describe "#https?" do
     it 'returns true if url contain https protocol' do
       site = create(:site)
