@@ -8,6 +8,6 @@
         li WWW: #{@site.www?}
     p
       | robots.txt
-      - if @robots
+      - if @site.robot
         .border.border-primary
-          = simple_format @robots
+          = simple_format @site.robot.body
