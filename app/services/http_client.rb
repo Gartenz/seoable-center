@@ -12,4 +12,11 @@ class Services::HTTPClient
   rescue StandardError
     @robots = nil
   end
+
+  def self.get(url)
+    response = Faraday.get url
+    response.success? ? response.body : nil
+  rescue StandardError
+    nil
+  end
 end

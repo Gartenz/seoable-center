@@ -26,6 +26,7 @@ ActiveRecord::Schema.define(version: 2019_07_01_092155) do
   create_table "sitemaps", force: :cascade do |t|
     t.bigint "site_id"
     t.string "body"
+    t.string "url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["site_id"], name: "index_sitemaps_on_site_id"
