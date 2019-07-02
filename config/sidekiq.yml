@@ -1,4 +1,5 @@
 :queues:
   - default
   - robots
-  - sitemap
+  - sitemaps
+  - pages

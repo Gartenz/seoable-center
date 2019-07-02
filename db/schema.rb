@@ -10,10 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_01_092155) do
+ActiveRecord::Schema.define(version: 2019_07_02_121231) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "pages", force: :cascade do |t|
+    t.bigint "site_id"
+    t.string "url"
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["site_id"], name: "index_pages_on_site_id"
+  end
 
   create_table "robots", force: :cascade do |t|
     t.bigint "site_id"
@@ -25,7 +34,7 @@ ActiveRecord::Schema.define(version: 2019_07_01_092155) do
 
   create_table "sitemaps", force: :cascade do |t|
     t.bigint "site_id"
-    t.string "body"
+    t.text "body"
     t.string "url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -39,5 +48,6 @@ ActiveRecord::Schema.define(version: 2019_07_01_092155) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "pages", "sites"
   add_foreign_key "sitemaps", "sites"
 end

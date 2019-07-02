@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :robot do
-    site { "" }
+    site
     body { "MyString" }
   end
 end

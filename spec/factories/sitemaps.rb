@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :sitemap do
-    site { nil }
+    site
     body { "MyString" }
   end
 end

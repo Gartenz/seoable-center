@@ -1,12 +1,12 @@
 class GetSitemapJob < ApplicationJob
-  queue_as :sitemap
+  queue_as :sitemaps
 
   def perform(site, url)
     sitemap_body = Services::HTTPClient.get url
     return if sitemap_body.nil?
-    
+
     site.sitemaps.create(url: url, body: sitemap_body)
-    document = Nokogiri(sitemap)
+    document = Nokogiri(sitemap_body)
     if document.at('sitemapindex')
       document.search('loc').each { |sitemap| GetSitemapJob.perform_later(site, sitemap.content) }
     else

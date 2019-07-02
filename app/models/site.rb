@@ -1,8 +1,9 @@
 class Site < ApplicationRecord
-  after_create :get_robots
+  after_commit :get_robots, on: :create
 
   has_one :robot
   has_many :sitemaps, dependent: :destroy
+  has_many :pages, dependent: :destroy
 
   validates :url, presence: true
 
@@ -17,6 +18,6 @@ class Site < ApplicationRecord
   private
 
   def get_robots
-    GetRobotsJob.perform_later self
+    GetRobotsJob.perform_later(self)
   end
 end
