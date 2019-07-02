@@ -3,6 +3,7 @@ require 'rails_helper'
 RSpec.describe Site, type: :model do
   it { should have_one :robot }
   it { should have_many(:sitemaps).dependent(:destroy)  }
+  it { should have_many(:pages).dependent(:destroy) }
 
   it { should validate_presence_of :url }
 

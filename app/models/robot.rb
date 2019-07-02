@@ -1,5 +1,5 @@
 class Robot < ApplicationRecord
-  after_create :get_sitemaps
+  after_commit :get_sitemaps, on: :create
 
   belongs_to :site
 
@@ -8,6 +8,6 @@ class Robot < ApplicationRecord
   private
 
   def get_sitemaps
-    GetSitemapJob.perform_later(self.site)
+    ExtractSitemapJob.perform_later(self.site)
   end
 end

@@ -6,8 +6,8 @@
 #
 default: &default
   adapter: postgresql
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  timeout: 5000
+  pool: 50
+  timeout: 6000
 
 development:
   <<: *default
@@ -22,4 +22,4 @@ test:
 
 production:
   <<: *default
-  database: db//seoable_center_production
+  database: db/seoable_center_production
