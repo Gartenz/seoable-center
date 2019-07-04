@@ -4,9 +4,10 @@ class GetSitemapJob < ApplicationJob
   def perform(site, url, lastmod)
     sitemap_body = Services::HTTPClient.get url
     return if sitemap_body.nil?
+    sitemap_body = ActiveSupport::Gzip.decompress(sitemap_body) if url =~ /.gz$/
 
     site.sitemaps.create(url: url, body: sitemap_body, lastmod:  lastmod)
-    
+
     document = Nokogiri(sitemap_body)
     if document.at('sitemapindex')
       make_sitemap_jobs(site, document)
