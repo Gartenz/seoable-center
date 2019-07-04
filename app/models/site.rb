@@ -19,7 +19,6 @@ class Site < ApplicationRecord
   private
 
   def get_robots
-    byebug
     GetRobotsJob.perform_later(self)
   end
 end
