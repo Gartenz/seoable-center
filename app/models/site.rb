@@ -5,6 +5,7 @@ class Site < ApplicationRecord
   has_many :sitemaps, dependent: :destroy
   has_many :pages, dependent: :destroy
 
+  validates :url, uniqueness: true
   validates :url, presence: true
 
   def https?
@@ -18,6 +19,7 @@ class Site < ApplicationRecord
   private
 
   def get_robots
+    byebug
     GetRobotsJob.perform_later(self)
   end
 end

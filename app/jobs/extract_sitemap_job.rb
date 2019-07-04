@@ -6,7 +6,7 @@ class ExtractSitemapJob < ApplicationJob
     if sitemaps.count.zero?
       GetSitemapJob.perform_later("#{site.url}/sitemap.xml")
     else
-      sitemaps.each { |url| GetSitemapJob.perform_later(site, url) }
+      sitemaps.each { |url| GetSitemapJob.perform_later(site, url, nil) }
     end
   end
 end
