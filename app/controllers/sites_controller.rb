@@ -18,6 +18,11 @@ class SitesController < ApplicationController
     @site = Site.find(params['id'])
   end
 
+  def update_info
+    site = Site.find(params['site_id'])
+    UpdateSiteJob.perform_later(site)
+  end
+
   private
   def set_sites
     @sites = Site.all

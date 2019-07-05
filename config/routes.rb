@@ -4,5 +4,7 @@ Rails.application.routes.draw do
   root to: 'sites#index'
   mount Sidekiq::Web => '/sidekiq'
 
-  resources :sites
+  resources :sites do
+    post :update_info
+  end
 end

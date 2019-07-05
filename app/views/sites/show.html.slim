@@ -6,6 +6,7 @@
       ul
         li HTTPS: #{@site.https?}
         li WWW: #{@site.www?}
+    = link_to 'Update site', site_update_info_path(@site), method: :post, class: 'btn btn-warning'
     p
       | robots.txt
       - if @site.robot

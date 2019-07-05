@@ -2,11 +2,21 @@ class GetSitemapJob < ApplicationJob
   queue_as :sitemaps
 
   def perform(site, url, lastmod)
+    sitemap = site.sitemaps.find_by(url: url)
+    if sitemap && lastmod
+      return if lastmod.to_datetime == sitemap.lastmod.to_datetime
+    end
+
     sitemap_body = Services::HTTPClient.get url
     return if sitemap_body.nil?
+
     sitemap_body = ActiveSupport::Gzip.decompress(sitemap_body) if url =~ /.gz$/
 
-    site.sitemaps.create(url: url, body: sitemap_body, lastmod:  lastmod)
+    if sitemap
+      sitemap.update!(body: sitemap_body, lastmod: lastmod)
+    else
+      site.sitemaps.create!(url: url, body: sitemap_body, lastmod:  lastmod)
+    end
 
     document = Nokogiri(sitemap_body)
     if document.at('sitemapindex')
