@@ -1,6 +1,6 @@
 :concurrency: 25
 :queues:
   - default
-  - robots
-  - sitemaps
-  - pages
+  - [robots, 2]
+  - [sitemaps, 1]
+  - [pages, 1]
