@@ -16,6 +16,7 @@ class SitesController < ApplicationController
 
   def show
     @site = Site.find(params['id'])
+    @pages = @site.pages.page(params[:page])
   end
 
   def destroy
