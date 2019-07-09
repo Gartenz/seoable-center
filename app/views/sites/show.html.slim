@@ -11,4 +11,14 @@
       | robots.txt
       - if @site.robot
         .border.border-primary
-          = simple_format @site.robot.body
+          textarea.form-control rows='10'
+            = @site.robot.body
+    p.pages
+      = paginate @pages
+      table.table.table-striped
+        th Url
+        - @pages.each do |page|
+          tr
+            td
+              = link_to page.url, site_pages_url(page)
+      = paginate @pages, remote: true
