@@ -20,5 +20,5 @@
         - @pages.each do |page|
           tr
             td
-              = link_to page.url, site_pages_url(page)
+              = link_to page.url, page_url(page)
       = paginate @pages, remote: true
