@@ -1,66 +1,100 @@
 class Services::Seo::Head
-  VIEPORT_RULE = { "width" => 'device-width', "initial-scale" => 1, "viewport-fit" => 'cover'}.freeze
+  VIEWPORT_RULE = { "width" => 'device-width', "initial-scale" => 1, "viewport-fit" => 'cover'}.freeze
+  HEAD_CHECKS = %i[doctype charset title description viewport favicon]
+  def initialize(doc)
+    @doc = doc
+    @result = {}
+  end
 
-  def self.parse(head)
-    result = {}
-    result[:doctype] = parse_doctype
-    result[:charset] = parse_charset
-    result[:viewport] = parse_viewport(head.at("meta[name='viewport']")[:content])
-    result[:title] = parse_title
-    result[:description] = parse_desription(head.at("meta[name='description']")[:content])
+  def check
+    HEAD_CHECKS.each { |check| send check }
+    @result
   end
 
   private
 
-  def parse_viewport(viewport_string)
-    result = { value: true, errors: [] }
-    params = viewport_string.split(',').map { |param| param.strip }
+  def search_meta(meta_name)
+    @doc.at('head').search('meta').each do |meta|
+      return meta if meta['name']&.downcase == meta_name
+    end
+  end
+
+  def viewport
+    params = search_meta('viewport')[:content].split(',').map { |param| param.strip }
     hash_params = Hash[*params.map { |p| p.split('=') }.flatten]
-    hash_params.each do |k,v|
-      if k == 'initial-scale' && v.to_i != VIEPORT_RULE[k]
-        result[:value] = false
-        result[:errors] << ["Should have valid #{k}=#{VIEPORT_RULE[k]}"]
+    errors = []
+    VIEWPORT_RULE.each do |k,v|
+      if !hash_params.keys.include? k
+        errors << "viewport should have #{k}"
       else
-        if v != VIEPORT_RULE[k]
-          result[:value] = false
-          result[:errors] << ["Should have valid #{k}=#{VIEPORT_RULE[k]}"]
+        if k == 'initial-scale' && v!= hash_params[k].to_f
+          errors << "Should have valid #{k}=#{v}"
+        else
+          if v != hash_params[k]
+            errors << "Should have valid #{k}=#{v}"
+          end
         end
       end
     end
-    result
+    @result[:viewport] = errors.size.zero? ? param_valid : param_invalid(errors)
   end
 
-  def parse_doctype
-    if doc.internal_subset.html_dtd?
-      { value: true, errors: [] }
-    else
-      { value: false, errors: ['Should have valid <!doctype html>'] }
-    end
+  def doctype
+    @result[:doctype] =
+      if @doc.internal_subset.html_dtd?
+        param_valid
+      else
+        param_invalid(['Should have valid <!doctype html>'])
+      end
   end
 
-  def parse_charset
-    if doc.meta_encoding == 'utf-8'
-      { value: true, errors: [] }
-    else
-      { value: false, errors: ['Should have valid <meta charset="utf-8">'] }
-    end
+  def charset
+    @result[:charset] =
+      if @doc.meta_encoding == 'utf-8'
+        param_valid
+      else
+        param_invalid(['Should have valid <meta charset="utf-8">'])
+      end
   end
 
-  def parse_title
-    result = { value: true, errors: [] }
-    if doc.tittle.length > 55
-      result[:value] = false
-      result[:errors] << ["Should be less than 55 characters"]
-    end
-    result
+  def title
+    @result[:title] =
+      if @doc.title.length <= 55
+        param_valid
+      else
+        param_invalid(["Should be less than 55 characters"])
+      end
   end
 
-  def parse_desription(description_string)
-    result = { value: true, errors: [] }
-    if description_string.length > 150
-      result[:value] = false
-      result[:errors] << ["Should be less than 150 characters"]
+  def description
+    @result[:description] =
+      if search_meta('description')[:content].length <= 150
+        param_valid
+      else
+        param_invalid(["Should be less than 150 characters"])
+      end
+  end
+
+  def favicon
+    fav = @doc.at('head').at("link[rel='icon']")
+    if fav.nil?
+      @result[:favicon] = param_invalid(['Favicon is not provided'])
+      return
     end
-    result
+
+    @result[:favicon] =
+      if fav[:type] =='image/png' && !(fav[:href] =~ /.png$/).nil?
+        param_valid
+      else
+        param_invalid(['Should be image/png'])
+      end
+  end
+
+  def param_valid
+    { value: true, errors: [] }
+  end
+
+  def param_invalid(errors)
+    { value: false, errors: errors }
   end
 end
