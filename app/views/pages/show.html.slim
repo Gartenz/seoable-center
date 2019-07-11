@@ -1,1 +1,11 @@
-|hello
+card.mt-3
+  .card-body
+    h5.card-title
+      = @page.url
+    = link_to 'Get statistics', page_statistics_url(@page), method: :post, remote: true,
+                                                            data: { type: :json }, class: 'btn btn-warning get-stats'
+    .statistics
+      - if @page_statistics.empty?
+        | No statistics available
+      - else
+        = render 'pages/statistic', stats: @page_statistics

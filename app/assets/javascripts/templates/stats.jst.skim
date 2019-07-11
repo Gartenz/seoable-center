@@ -1,0 +1,14 @@
+table.table.table-striped
+  th Parameter
+  th Check result
+  - for key, value of @stats
+    tr
+      td
+        = key[0].toUpperCase() + key.substring(1)
+      td
+        - if value['value']
+          | Passed!
+        - else
+          - for message in value['errors']
+            p
+              = message
