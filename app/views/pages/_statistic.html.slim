@@ -1,0 +1,14 @@
+table.table.table-striped
+  th Parameter
+  th Check result
+  - stats.each do |key, value|
+    tr
+      td
+        = key.capitalize
+      td
+        - if value['value']
+          | Passed!
+        - else
+          - value['errors'].each do |message|
+            p
+              = message

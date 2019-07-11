@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_04_075612) do
+ActiveRecord::Schema.define(version: 2019_07_11_115439) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -52,6 +52,15 @@ ActiveRecord::Schema.define(version: 2019_07_04_075612) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "statistics", force: :cascade do |t|
+    t.bigint "page_id"
+    t.text "body"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["page_id"], name: "index_statistics_on_page_id"
+  end
+
   add_foreign_key "pages", "sites"
   add_foreign_key "sitemaps", "sites"
+  add_foreign_key "statistics", "pages"
 end

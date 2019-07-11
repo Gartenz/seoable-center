@@ -1,8 +1,9 @@
 class Services::Seo::Head
   VIEWPORT_RULE = { "width" => 'device-width', "initial-scale" => 1, "viewport-fit" => 'cover'}.freeze
   HEAD_CHECKS = %i[doctype charset title description viewport favicon]
-  def initialize(doc)
-    @doc = doc
+
+  def initialize(page)
+    @doc = Nokogiri::HTML(page.body)
     @result = {}
   end
 
@@ -25,7 +26,7 @@ class Services::Seo::Head
     errors = []
     VIEWPORT_RULE.each do |k,v|
       if !hash_params.keys.include? k
-        errors << "viewport should have #{k}"
+        errors << "Should have #{k}"
       else
         if k == 'initial-scale' && v!= hash_params[k].to_f
           errors << "Should have valid #{k}=#{v}"
@@ -78,7 +79,7 @@ class Services::Seo::Head
   def favicon
     fav = @doc.at('head').at("link[rel='icon']")
     if fav.nil?
-      @result[:favicon] = param_invalid(['Favicon is not provided'])
+      @result[:favicon] = param_invalid(['Is not provided'])
       return
     end
 
