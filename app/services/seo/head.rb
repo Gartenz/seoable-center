@@ -2,8 +2,8 @@ class Services::Seo::Head
   VIEWPORT_RULE = { "width" => 'device-width', "initial-scale" => 1, "viewport-fit" => 'cover'}.freeze
   HEAD_CHECKS = %i[doctype charset title description viewport favicon]
 
-  def initialize(page)
-    @doc = Nokogiri::HTML(page.body)
+  def initialize(doc)
+    @doc = doc
     @result = {}
   end
 
@@ -91,8 +91,8 @@ class Services::Seo::Head
       end
   end
 
-  def param_valid
-    { value: true, errors: [] }
+  def param_valid(*info)
+    { value: true, info: info, errors: [] }
   end
 
   def param_invalid(errors)

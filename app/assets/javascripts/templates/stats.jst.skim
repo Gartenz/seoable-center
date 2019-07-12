@@ -1,14 +1,21 @@
-table.table.table-striped
-  th Parameter
-  th Check result
-  - for key, value of @stats
-    tr
-      td
-        = key[0].toUpperCase() + key.substring(1)
-      td
-        - if value['value']
-          | Passed!
-        - else
-          - for message in value['errors']
-            p
-              = message
+- for check_name, check_result of @stats
+  .
+    h3
+      = check_name
+    table.table.table-striped.table-sm
+      th Parameter
+      th Check result
+      - for key, value of check_result
+        tr
+          td
+            = key[0].toUpperCase() + key.substring(1)
+          td
+            - if value['value']
+              - if value['info'].length > 0
+                = value['info']
+              - else
+                | Passed!
+            - else
+              - for message in value['errors']
+                p
+                  = message
