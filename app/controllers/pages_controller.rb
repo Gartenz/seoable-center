@@ -10,7 +10,7 @@ class PagesController < ApplicationController
 
   def statistics
     @page = Page.find(params['page_id'])
-    @page_statistics = Services::Seo::Head.new(@page).check
+    @page_statistics = Services::Seo.new(@page).check
     @page.statistics.create(body: @page_statistics.to_json)
 
     respond_to do |format|

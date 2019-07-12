@@ -1,14 +1,23 @@
-table.table.table-striped
-  th Parameter
-  th Check result
-  - stats.each do |key, value|
-    tr
-      td
-        = key.capitalize
-      td
-        - if value['value']
-          | Passed!
-        - else
-          - value['errors'].each do |message|
-            p
-              = message
+- stats.each do |check_name, check_resut|
+  .
+    h3
+      = check_name
+    table.table.table-sm.table-striped
+      th Parameter
+      th Check result
+      - check_resut.each do |key, value|
+        tr
+          td
+            = key.capitalize
+          td
+            - if value['value']
+              - if value['info'].size.zero?
+                | Passed!
+              - else
+                - value['info'].each do |info|
+                  p
+                    = info
+            - else
+              - value['errors'].each do |message|
+                p
+                  = message
