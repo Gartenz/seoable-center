@@ -1,10 +1,14 @@
 class Services::Seo::Head
   VIEWPORT_RULE = { "width" => 'device-width', "initial-scale" => 1, "viewport-fit" => 'cover'}.freeze
   HEAD_CHECKS = %i[doctype charset title description viewport favicon]
+  ERRORS = { doctype: ['Should have valid <!doctype html>'], charset: ['Should have valid <meta charset="utf-8">'],
+             title: ["Should be less than 55 characters"], description: ["Should be less than 150 characters"],
+             favicon: ['Is not provided', 'Should be image/png']}.freeze
 
   def initialize(doc)
     @doc = doc
     @result = {}
+    @validator = Services::Seo::Validator.new
   end
 
   def check
@@ -37,65 +41,31 @@ class Services::Seo::Head
         end
       end
     end
-    @result[:viewport] = errors.size.zero? ? param_valid : param_invalid(errors)
+    @result[:viewport] = @validator.validate(errors) { errors.size.zero? }
   end
 
   def doctype
-    @result[:doctype] =
-      if @doc.internal_subset.html_dtd?
-        param_valid
-      else
-        param_invalid(['Should have valid <!doctype html>'])
-      end
+    @result[:doctype] = @validator.validate(ERRORS[:doctype]) { @doc.internal_subset.html_dtd? }
   end
 
   def charset
-    @result[:charset] =
-      if @doc.meta_encoding == 'utf-8'
-        param_valid
-      else
-        param_invalid(['Should have valid <meta charset="utf-8">'])
-      end
+    @result[:charset] = @validator.validate(ERRORS[:charset]) { @doc.meta_encoding == 'utf-8' }
   end
 
   def title
-    @result[:title] =
-      if @doc.title.length <= 55
-        param_valid
-      else
-        param_invalid(["Should be less than 55 characters"])
-      end
+    @result[:title] = @validator.validate(ERRORS[:title]) { @doc.title.length <= 55 }
   end
 
   def description
-    @result[:description] =
-      if search_meta('description')[:content].length <= 150
-        param_valid
-      else
-        param_invalid(["Should be less than 150 characters"])
-      end
+    @result[:description] = @validator.validate(ERRORS[:description]) { search_meta('description')[:content].length <= 150 }
   end
 
   def favicon
     fav = @doc.at('head').at("link[rel='icon']")
-    if fav.nil?
-      @result[:favicon] = param_invalid(['Is not provided'])
-      return
-    end
+    @result[:favicon] = @validator.validate([ERRORS[:favicon][0]]) { !fav.nil? }
+    return unless @result[:favicon][:value]
 
-    @result[:favicon] =
-      if fav[:type] =='image/png' && !(fav[:href] =~ /.png$/).nil?
-        param_valid
-      else
-        param_invalid(['Should be image/png'])
-      end
-  end
-
-  def param_valid(*info)
-    { value: true, info: info, errors: [] }
-  end
-
-  def param_invalid(errors)
-    { value: false, errors: errors }
+    byebug
+    @result[:favicon] = @validator.validate([ERRORS[:favicon][1]]) { fav[:type] =='image/png' && !(fav[:href] =~ /.png$/).nil? }
   end
 end
