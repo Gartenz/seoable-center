@@ -5,17 +5,25 @@
     table.table.table-striped.table-sm
       th Parameter
       th Check result
+      th Info
+      th Errors
       - for key, value of check_result
         tr
           td
             = key[0].toUpperCase() + key.substring(1)
           td
             - if value['value']
-              - if value['info'].length > 0
-                = value['info']
-              - else
-                | Passed!
+              | Passed!
             - else
-              - for message in value['errors']
+              | Not Passed!
+          td
+            - if Array.isArray(value['info'])
+              - for info in value['info']
                 p
-                  = message
+                  = info
+            - else
+              = value['info']
+          td
+            - for error in value['errors']
+              p
+                = error

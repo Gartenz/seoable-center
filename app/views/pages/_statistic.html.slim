@@ -5,19 +5,25 @@
     table.table.table-sm.table-striped
       th Parameter
       th Check result
+      th Info
+      th Errors
       - check_resut.each do |key, value|
         tr
           td
             = key.capitalize
           td
             - if value['value']
-              - if value['info'].size.zero?
-                | Passed!
-              - else
-                - value['info'].each do |info|
-                  p
-                    = info
+              | Passed!
             - else
-              - value['errors'].each do |message|
+              | Not Passed!
+          td
+            - if value['info'].is_a? Array
+              - value['info'].each do |info|
                 p
-                  = message
+                  = info
+            - else
+              = value['info']
+          td
+            - value['errors'].each do |error|
+              p
+                = error

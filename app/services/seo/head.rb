@@ -45,19 +45,19 @@ class Services::Seo::Head
   end
 
   def doctype
-    @result[:doctype] = @validator.validate(ERRORS[:doctype]) { @doc.internal_subset.html_dtd? }
+    @result[:doctype] = @validator.validate(ERRORS[:doctype], @doc.internal_subset.name) { @doc.internal_subset.html_dtd? }
   end
 
   def charset
-    @result[:charset] = @validator.validate(ERRORS[:charset]) { @doc.meta_encoding == 'utf-8' }
+    @result[:charset] = @validator.validate(ERRORS[:charset], @doc.meta_encoding) { @doc.meta_encoding == 'utf-8' }
   end
 
   def title
-    @result[:title] = @validator.validate(ERRORS[:title]) { @doc.title.length <= 55 }
+    @result[:title] = @validator.validate(ERRORS[:title], @doc.title) { @doc.title.length <= 55 }
   end
 
   def description
-    @result[:description] = @validator.validate(ERRORS[:description]) { search_meta('description')[:content].length <= 150 }
+    @result[:description] = @validator.validate(ERRORS[:description], search_meta('description')[:content]) { search_meta('description')[:content].length <= 150 }
   end
 
   def favicon
@@ -65,7 +65,13 @@ class Services::Seo::Head
     @result[:favicon] = @validator.validate([ERRORS[:favicon][0]]) { !fav.nil? }
     return unless @result[:favicon][:value]
 
-    byebug
-    @result[:favicon] = @validator.validate([ERRORS[:favicon][1]]) { fav[:type] =='image/png' && !(fav[:href] =~ /.png$/).nil? }
+    href = fav[:href]
+    url =
+      if !(href =~ /^\/\//).nil?
+        href[2..-1]
+      else
+        href
+      end
+    @result[:favicon] = @validator.validate([ERRORS[:favicon][1]], url) { fav[:type] =='image/png' && !(fav[:href] =~ /.png$/).nil? }
   end
 end
